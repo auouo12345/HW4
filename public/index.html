@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HW4</title>
+
+    <style>
+        .head {
+            text-align: center;
+            width: 100%;
+        }
+        form {
+            font-size: 20px;
+        }
+        input {
+            height: 40px;
+            font-size: 20px;
+        }
+        .chart-type {
+            text-align: center;
+            margin-top: 10px;
+        }
+        button {
+            height: 40px;
+            font-size: 20px;
+        }
+        .data {
+            height: 75vh;
+        }
+        #chart {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="head">
+        <h1>RAFT 歷史價格</h1>
+        <form class="search-form">
+            <label>
+                開始
+                <input id="start" type="date" name="start">
+            </label>
+            <label>
+                結束
+                <input id="end" type="date" name="end">
+            </label>
+            <input type="submit" name="submit">
+        </form>
+    </div>
+
+    <div class="chart-type">
+        <button id="bar" onclick="createChart(myData , 'bar')">長條圖</button>
+        <button id="line" onclick="createChart(myData , 'line')">折線圖</button>
+    </div>
+
+    <div class="data">
+        <canvas id="chart"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script>
+        let myChart;
+        let myData;
+
+        document.getElementsByClassName("search-form")[0].addEventListener('submit' , async event => {
+            event.preventDefault();
+            let start = document.getElementById("start").value;
+            let end = document.getElementById("end").value;
+            console.log(start);
+            console.log(end);
+
+            if(start < end) {
+                const res = await fetch(`http://localhost:3000/api/getPrice?start=${start}&end=${end}`)
+                    .then(res => {
+                        return res.json();
+                    })
+                    .then(data => {
+                        myData = data;
+                        createChart(data, 'bar');
+                    });
+            } else {
+                alert("開始請務必小於結束");
+            }
+        });
+
+        function createChart(data , type) {
+            if(myChart) {
+                myChart.destroy();
+            }
+
+            const ctx = document.getElementById("chart");
+
+            myChart = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: data.map(row => row.DateTime),
+                    datasets: [{
+                        label: 'Price',
+                        data: data.map(row => row.price),
+                        borderWidth: 1,
+                        borderColor: "#0072E3",
+                        backgroundColor: "#9BD0F5"
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        font: {
+                          size: 60
+                        },
+                        text: "價格一覽"
+                    }
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
