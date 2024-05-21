@@ -71,13 +71,13 @@
 
             if(start < end) {
                 const res = await fetch(`http://localhost:3000/api/getPrice?start=${start}&end=${end}`)
-                    .then(res => {
-                        return res.json();
-                    })
-                    .then(data => {
-                        myData = data;
-                        createChart(data, 'bar');
-                    });
+                .then(res => {
+                    return res.json();
+                })
+                .then(data => {
+                    myData = data;
+                    createChart(data, 'bar');
+                });
             } else {
                 alert("開始請務必小於結束");
             }
@@ -99,7 +99,9 @@
                         data: data.map(row => row.price),
                         borderWidth: 1,
                         borderColor: "#0072E3",
-                        backgroundColor: "#9BD0F5"
+                        backgroundColor: "#9BD0F5",
+                        fill: false,
+                        tension: 0
                     }]
                 },
                 options: {

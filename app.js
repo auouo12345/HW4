@@ -32,7 +32,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 app.get('/api/getPrice' , (req , res) => {
-  console.log("test");
   let start = req.query.start;
   let end = req.query.end;
   let sql = "SELECT * FROM price WHERE DateTime BETWEEN ? AND ?";
